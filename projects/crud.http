@@ -1,0 +1,34 @@
+@rootUrl = http://localhost:8080
+# @rootUrl = https://serene-plains-38345.herokuapp.com
+# @rootUrl = https://kjg2r2wpii.execute-api.us-east-1.amazonaws.com
+
+get {{rootUrl}}/user
+
+###
+get {{rootUrl}}/invoice/0QzKlueng
+
+###
+post {{rootUrl}}/user
+Content-Type: application/json
+
+{
+"name" : "Ibrohim",
+"phone" : "+1646753433"
+}
+
+###
+put {{rootUrl}}/user
+Content-Type: application/json
+
+{
+	"id" : "303b2674-a188-4b92-942b-3708cadd9c14",
+	"name" : "Mirjalol",
+	"phone" : "0781369819"
+}
+
+###
+delete {{rootUrl}}/user
+
+{
+	"id" : "303b2674-a188-4b92-942b-3708cadd9c14"
+}
