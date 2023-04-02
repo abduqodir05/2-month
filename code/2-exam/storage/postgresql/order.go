@@ -21,6 +21,147 @@ func NewOrderRepo(db *pgxpool.Pool) *orderRepo {
 	}
 }
 
+func (r *orderRepo) InfoOfSoldProductsByStaffer(ctx context.Context, req *models.GetListEmployeeRequest) (resp *models.GetListEmployeeResponse, err error) {
+
+	resp = &models.GetListEmployeeResponse{}
+
+	var (
+		query  string
+		filter = " WHERE TRUE "
+		offset = " OFFSET 0"
+		limit  = " LIMIT 10"
+	)
+
+	query = `
+	SELECT 
+	staf.first_name||' '||staf.last_name as employee,
+	cate.category_name as category,
+	p.product_name as product,
+	(oi.quantity) AS total_amount,
+	(oi.list_price) * (oi.quantity)  AS total_price,
+	CAST(o.order_date::timestamp AS VARCHAR) as date 
+	from orders as o
+	join staffs as staf on staf.staff_id = o.staff_id 
+	join stores as s on s.store_id = o.store_id
+	join stocks as stoc on stoc.store_id = s.store_id
+	join products as p on p.product_id = stoc.product_id
+	join categories as cate on cate.category_id = p.category_id 
+	join order_items as oi on oi.order_id = o.order_id
+	`
+	if len(req.Search) > 0 {
+		filter += " AND name ILIKE '%' || '" + req.Search + "' || '%' "
+	}
+
+	if req.Offset > 0 {
+		offset = fmt.Sprintf(" OFFSET %d", req.Offset)
+	}
+
+	if req.Limit > 0 {
+		limit = fmt.Sprintf(" LIMIT %d", req.Limit)
+	}
+
+	query += filter + offset + limit
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	sum := 0
+	for rows.Next() {
+
+		var employee models.Employee
+
+		err = rows.Scan(
+			&employee.EmployeeName,
+			// &employee.StoreName,
+			&employee.CategoryName,
+			&employee.ProductName,
+			&employee.Total_amount,
+			&employee.TotalPrice,
+			&employee.Date,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		resp.Employees = append(resp.Employees, &employee)
+		sum++
+	}
+	resp.Count = sum
+
+	return resp, nil
+}
+
+func (r *orderRepo) TotalPriceWithOrder(ctx context.Context, req *models.OrderTotalPrice) (string, error) {
+
+	var (
+		query       string
+		PromoCode   models.PromoCode
+		total_price float64
+	)
+	query = `
+	SELECT 
+	sum(oi.list_price) as total_price
+	from orders as o 
+	join order_items as oi on oi.order_id = o.order_id
+	join products as p on p.product_id = oi.product_id
+	where o.order_id = $1
+	`
+
+	err := r.db.QueryRow(ctx, query, req.OrderId).Scan(&total_price)
+
+	if total_price <= 0 {
+		return "", fmt.Errorf("not available with this order")
+	}
+
+	if err != nil {
+		return "", err
+	}
+
+	query = `
+		SELECT
+		name,
+		discount,
+		discount_type,
+			order_limit_price
+			FROM promo_code
+			WHERE name = $1
+			`
+
+	var params = map[string]interface{}{
+		"name":               req.Name,
+		"discount":           req.Discount,
+		"discount_type":      req.DiscountType,
+		"order_limit_price ": req.OrderLimitPrice,
+	}
+	err = r.db.QueryRow(ctx, query, params).Scan(
+		&PromoCode.Name,
+		&PromoCode.Discount,
+		&PromoCode.DiscountType,
+		&PromoCode.OrderLimitPrice,
+	)
+	fmt.Println("ccccccccccccccccccccccc", req.Name)
+	fmt.Println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", err)
+	if err != nil {
+		return "", err
+	}
+
+	if total_price < 0 {
+		return "", fmt.Errorf("don't have money")
+	}
+
+	if PromoCode.DiscountType == "fix" && PromoCode.OrderLimitPrice < total_price {
+		total_price = total_price - PromoCode.Discount
+	} else if PromoCode.DiscountType == "percent" && PromoCode.OrderLimitPrice < total_price {
+		total_price = total_price - total_price*PromoCode.Discount/100
+	}
+	return fmt.Sprintf("total_price: %v", total_price), nil
+}
+
 func (r *orderRepo) Create(ctx context.Context, req *models.CreateOrder) (int, error) {
 	var (
 		query string
@@ -319,81 +460,6 @@ func (r *orderRepo) GetList(ctx context.Context, req *models.GetListOrderRequest
 		}
 
 		resp.Orders = append(resp.Orders, &order)
-	}
-
-	return resp, nil
-}
-
-func (r *orderRepo) InfoOfSoldProductsByStaffer(ctx context.Context, req *models.GetListEmployeeRequest) (resp *models.GetListEmployeeResponse, err error) {
-
-	resp = &models.GetListEmployeeResponse{}
-
-	var (
-		query  string
-		filter = " WHERE TRUE "
-		offset = " OFFSET 0"
-		limit  = " LIMIT 10"
-	)
-
-	query = `
-	SELECT 
-	staf.first_name||' '||staf.last_name as employee,
-	cate.category_name as category,
-	p.product_name as product,
-	(oi.quantity) AS total_amount,
-	(oi.list_price) * (oi.quantity)  AS total_price,
-	CAST(o.order_date::timestamp AS VARCHAR) as date 
-	from orders as o
-	join staffs as staf on staf.staff_id = o.staff_id 
-	join stores as s on s.store_id = o.store_id
-	join stocks as stoc on stoc.store_id = s.store_id
-	join products as p on p.product_id = stoc.product_id
-	join categories as cate on cate.category_id = p.category_id 
-	join order_items as oi on oi.order_id = o.order_id
-	`
-	if len(req.Search) > 0 {
-		filter += " AND name ILIKE '%' || '" + req.Search + "' || '%' "
-	}
-
-	if req.Offset > 0 {
-		offset = fmt.Sprintf(" OFFSET %d", req.Offset)
-	}
-
-	if req.Limit > 0 {
-		limit = fmt.Sprintf(" LIMIT %d", req.Limit)
-	}
-
-	query += filter + offset + limit
-
-	fmt.Println("query aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", query)
-
-	rows, err := r.db.Query(ctx, query)
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
-	}
-	fmt.Println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", rows)
-	defer rows.Close()
-
-	for rows.Next() {
-
-		var employee models.Employee
-
-		err = rows.Scan(
-			&employee.EmployeeName,
-			// &employee.StoreName,
-			&employee.CategoryName,
-			&employee.ProductName,
-			&employee.Total_amount,
-			&employee.TotalPrice,
-			&employee.Date,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		resp.Employees = append(resp.Employees, &employee)
-
 	}
 
 	return resp, nil

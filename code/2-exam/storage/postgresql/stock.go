@@ -5,6 +5,7 @@ import (
 	"app/pkg/helper"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/jackc/pgtype"
@@ -20,6 +21,101 @@ func NewStockRepo(db *pgxpool.Pool) *stockRepo {
 	return &stockRepo{
 		db: db,
 	}
+}
+
+func (r *stockRepo) SendProduct(ctx context.Context, req *models.SendProduct) (int64, error) {
+
+	var (
+		query  string
+		queryy string
+		params map[string]interface{}
+	)
+
+	if req.Quantity < 0 {
+		return 0, fmt.Errorf("less than 0 product")
+	}
+
+	query = `
+		UPDATE
+		stocks
+		SET
+		quantity = quantity + :quantity
+		WHERE store_id = :store_id AND product_id = :product_id
+		`
+
+	params = map[string]interface{}{
+		"quantity":   req.Quantity,
+		"store_id":   req.From_storeId,
+		"product_id": req.ProductId,
+	}
+
+	query, args := helper.ReplaceQueryParams(query, params)
+
+	result, err := r.db.Exec(ctx, query, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	queryy = `
+		UPDATE
+		stocks
+		SET
+		quantity = quantity - :quantity
+		WHERE store_id = :store_id AND product_id = :product_id
+		`
+
+	params = map[string]interface{}{
+		"quantity":   req.Quantity,
+		"store_id":   req.To_storeId,
+		"product_id": req.ProductId,
+	}
+	queryy, args = helper.ReplaceQueryParams(queryy, params)
+
+	result, err = r.db.Exec(ctx, queryy, args...)
+	if err != nil {
+		return 0, err
+	}
+
+	return result.RowsAffected(), nil
+}
+func (r *stockRepo) GetProductsFormStock(ctx context.Context, req *models.CreateOrderItem) error {
+	var quantity, store_id int
+
+	if req.Quantity <= 0 {
+		return fmt.Errorf("quantity doesn't exist")
+	}
+
+	query := `
+		SELECT
+			c.category_id,
+    		c.category_name, 
+			SUM(s.quantity)
+		FROM stocks AS s 
+		LEFT JOIN products AS p ON p.product_id = s.product_id
+		LEFT JOIN categories AS c ON c.category_id = p.category_id
+		GROUP BY  c.category_id
+	`
+
+	err := r.db.QueryRow(ctx, query, req.ProductId, req.OrderId).Scan(&quantity, &store_id)
+	if err != nil {
+		return errors.New("counldn't find any product")
+	}
+
+	if quantity < req.Quantity {
+		return errors.New("not enough product")
+	}
+
+	_, err = r.db.Exec(ctx,
+		`UPDATE stocks SET quantity = :quantity - $1 WHERE store_id = :store_id 	AND product_id = :product_id`,
+		req.Quantity,
+		store_id,
+		req.ProductId,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *stockRepo) Create(ctx context.Context, req *models.CreateStock) (int, int, error) {
@@ -194,64 +290,6 @@ func (r *stockRepo) Update(ctx context.Context, req *models.UpdateStock) (int64,
 	if err != nil {
 		return 0, err
 	}
-
-	return result.RowsAffected(), nil
-}
-
-func (r *stockRepo) SendProduct(ctx context.Context, req *models.SendProduct) (int64, error) {
-	// Plus
-	var (
-		query  string
-		queryy  string
-		params map[string]interface{}
-	)
-
-	if req.Quantity < 0 {
-		return 0, fmt.Errorf("less than 0 product")
-	}
-
-	query = `
-		UPDATE
-		stocks
-		SET
-		quantity = quantity + :quantity
-		WHERE store_id = :store_id AND product_id = :product_id
-		`
-
-	params = map[string]interface{}{
-		"quantity":   req.Quantity,
-		"store_id":   req.From_storeId,
-		"product_id": req.ProductId,
-	}
-
-	query, args := helper.ReplaceQueryParams(query, params)
-
-	result, err := r.db.Exec(ctx, query, args...)
-	if err != nil {
-		return 0, err
-	}
-
-
-	queryy = `
-		UPDATE
-		stocks
-		SET
-		quantity = quantity - :quantity
-		WHERE store_id = :store_id AND product_id = :product_id
-		`
-
-	params = map[string]interface{}{
-		"quantity":   req.Quantity,
-		"store_id":   req.To_storeId,
-		"product_id": req.ProductId,
-	}
-	queryy, args = helper.ReplaceQueryParams(queryy, params)
-
-	result, err = r.db.Exec(ctx, queryy, args...)
-	if err != nil {
-		return 0, err
-	}
-
 
 	return result.RowsAffected(), nil
 }

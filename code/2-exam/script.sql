@@ -89,3 +89,15 @@ JOIN staffs AS st ON st.staff_id = o.staff_id
 JOIN order_item_data AS oi ON oi.order_id = o.order_id
 WHERE o.order_id = 1616
 
+
+SELECT 
+sum(oi.list_price) as total_price
+from orders as o 
+join order_items as oi on oi.order_id = o.order_id
+join products as p on p.product_id = oi.product_id
+where o.order_id = $1;
+
+
+UPDATE stocks SET
+ quantity = quantity - $1
+  WHERE store_id = $2 AND product_id = $3

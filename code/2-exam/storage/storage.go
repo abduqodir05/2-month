@@ -88,6 +88,7 @@ type OrderRepoI interface {
 	AddOrderItem(ctx context.Context, req *models.CreateOrderItem) error
 	RemoveOrderItem(ctx context.Context, req *models.OrderItemPrimaryKey) error
 	InfoOfSoldProductsByStaffer(ctx context.Context, req *models.GetListEmployeeRequest) (resp *models.GetListEmployeeResponse, err error)
+	TotalPriceWithOrder(ctx context.Context, req *models.OrderTotalPrice) (string, error)
 }
 type PromoCodeRepoI interface {
 	CreatePromoCode(ctx context.Context, req *models.CreatePromoCode) (string, error)

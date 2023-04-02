@@ -78,6 +78,9 @@ func NewApi(r *gin.Engine, cfg *config.Config, store storage.StorageI, logger lo
 	r.POST("/order_item/", handler.CreateOrderItem)
 	r.DELETE("/order_item/:id", handler.DeleteOrderItem)
 	r.GET("/ordersold", handler.InfoOfSoldProductsByStaffer)
+
+	// total price
+	r.GET("/totalorder/total_price", handler.TotalPriceOrder)
 	
 	// promo_code api
 	r.POST("/promo_code", handler.CreatePromoCode)

@@ -10,6 +10,87 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Get List Order godoc
+// @ID get_list_order_sold
+// @Router /ordersold [GET]
+// @Summary Sold Products By Staffers
+// @Description Sold Products By Staffers
+// @Tags Order
+// @Accept json
+// @Produce json
+// @Param offset query string false "offset"
+// @Param limit query string false "limit"
+// @Param search query string false "search"
+// @Success 200 {object} Response{data=string} "Success Request"
+// @Response 400 {object} Response{data=string} "Bad Request"
+// @Failure 500 {object} Response{data=string} "Server Error"
+func (h *Handler) InfoOfSoldProductsByStaffer(c *gin.Context) {
+
+	offset, err := h.getOffsetQuery(c.Query("offset"))
+	if err != nil {
+		h.handlerResponse(c, "Sold Products 1", http.StatusBadRequest, "invalid offset")
+		return
+	}
+
+	limit, err := h.getLimitQuery(c.Query("limit"))
+	if err != nil {
+		h.handlerResponse(c, "Sold Products 2", http.StatusBadRequest, "invalid limit")
+		return
+	}
+
+	resp, err := h.storages.Order().InfoOfSoldProductsByStaffer(context.Background(), &models.GetListEmployeeRequest{
+		Offset: offset,
+		Limit:  limit,
+		Search: c.Query("search"),
+	})
+	
+	if err != nil {
+		h.handlerResponse(c, "storage.order.Sold Products 3", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	h.handlerResponse(c, "Sold Products response 4" , http.StatusOK, resp)
+}
+
+// Get Total price order godoc
+// @ID get_total_price_order
+// @Router /totalorder/total_price [GET]
+// @Summary Total price orde
+// @Description Total price orde
+// @Tags Order
+// @Accept json
+// @Produce json
+// @Param order_id query string true "order_id"
+// @Param promocode_name query string false "name"
+// @Success 200 {object} Response{data=string} "Success Request"
+// @Response 400 {object} Response{data=string} "Bad Request"
+// @Failure 500 {object} Response{data=string} "Server Error"
+func (h *Handler) TotalPriceOrder(c *gin.Context) {
+
+	id := c.Param("id")
+	promo := c.Query("promo_code")
+	fmt.Println(id)
+	var orderPrice models.OrderTotalPrice
+	orderPrice.PromoCodeName = c.Query("name")
+
+	orderId, err := strconv.Atoi(id)
+	if err != nil {
+		h.handlerResponse(c, "Atoi error order total price", http.StatusBadRequest, err.Error())
+		fmt.Println(">>>>>>>>>>>>>>>>",orderId)
+		return
+	}
+	fmt.Println(promo)
+
+	TotalPrice, err := h.storages.Order().TotalPriceWithOrder(context.Background(), &models.OrderTotalPrice{OrderId: orderId})
+	if err != nil {
+
+		h.handlerResponse(c, "storage.order.getByID", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	h.handlerResponse(c, "order total price", http.StatusOK, TotalPrice)
+}
+
 // Create Order godoc
 // @ID create_order
 // @Router /order [POST]
@@ -117,48 +198,6 @@ func (h *Handler) GetListOrder(c *gin.Context) {
 	}
 
 	h.handlerResponse(c, "get list order response", http.StatusOK, resp)
-}
-// Get List Order godoc
-// @ID get_list_order_sold
-// @Router /ordersold [GET]
-// @Summary Sold Products By Staffers
-// @Description Sold Products By Staffers
-// @Tags Order
-// @Accept json
-// @Produce json
-// @Param offset query string false "offset"
-// @Param limit query string false "limit"
-// @Param search query string false "search"
-// @Success 200 {object} Response{data=string} "Success Request"
-// @Response 400 {object} Response{data=string} "Bad Request"
-// @Failure 500 {object} Response{data=string} "Server Error"
-func (h *Handler) InfoOfSoldProductsByStaffer(c *gin.Context) {
-
-	offset, err := h.getOffsetQuery(c.Query("offset"))
-	if err != nil {
-		h.handlerResponse(c, "Sold Products 1", http.StatusBadRequest, "invalid offset")
-		return
-	}
-
-	limit, err := h.getLimitQuery(c.Query("limit"))
-	if err != nil {
-		h.handlerResponse(c, "Sold Products 2", http.StatusBadRequest, "invalid limit")
-		return
-	}
-
-	resp, err := h.storages.Order().InfoOfSoldProductsByStaffer(context.Background(), &models.GetListEmployeeRequest{
-		Offset: offset,
-		Limit:  limit,
-		Search: c.Query("search"),
-	})
-	fmt.Println(">>>>>>>>>>>>>>>>>", resp)
-	
-	if err != nil {
-		h.handlerResponse(c, "storage.order.Sold Products 3", http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	h.handlerResponse(c, "Sold Products response 4" , http.StatusOK, resp)
 }
 
 // Update Order godoc

@@ -2862,4 +2862,53 @@ paths:
       summary: Update Store
       tags:
       - Store
+  /totalorder/total_price:
+    get:
+      consumes:
+      - application/json
+      description: Total price orde
+      operationId: get_total_price_order
+      parameters:
+      - description: order_id
+        in: query
+        name: order_id
+        required: true
+        type: string
+      - description: promocode_name
+        in: query
+        name: promocode_name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Total price orde
+      tags:
+      - Order
 swagger: "2.0"
