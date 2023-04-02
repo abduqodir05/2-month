@@ -67,7 +67,7 @@ func (h *Handler) InfoOfSoldProductsByStaffer(c *gin.Context) {
 // @Failure 500 {object} Response{data=string} "Server Error"
 func (h *Handler) TotalPriceOrder(c *gin.Context) {
 
-	id := c.Param("id")
+	id := c.Param("order_id")
 	promo := c.Query("promo_code")
 	fmt.Println(id)
 	var orderPrice models.OrderTotalPrice
@@ -76,7 +76,7 @@ func (h *Handler) TotalPriceOrder(c *gin.Context) {
 	orderId, err := strconv.Atoi(id)
 	if err != nil {
 		h.handlerResponse(c, "Atoi error order total price", http.StatusBadRequest, err.Error())
-		fmt.Println(">>>>>>>>>>>>>>>>",orderId)
+		fmt.Println(">>>>>>>>>>>>>>>",orderId)
 		return
 	}
 	fmt.Println(promo)

@@ -4536,7 +4536,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "promocode_name",
+                        "description": "name",
                         "name": "promocode_name",
                         "in": "query"
                     }

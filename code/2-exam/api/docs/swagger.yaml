@@ -2874,7 +2874,7 @@ paths:
         name: order_id
         required: true
         type: string
-      - description: promocode_name
+      - description: name
         in: query
         name: promocode_name
         type: string

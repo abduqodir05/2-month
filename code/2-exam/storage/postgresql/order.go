@@ -133,10 +133,10 @@ func (r *orderRepo) TotalPriceWithOrder(ctx context.Context, req *models.OrderTo
 			`
 
 	var params = map[string]interface{}{
-		"name":               req.Name,
-		"discount":           req.Discount,
-		"discount_type":      req.DiscountType,
-		"order_limit_price ": req.OrderLimitPrice,
+		"name": req.Name,
+		"discount": req.Discount,
+		"discount_type": req.DiscountType,
+		"order_limit_price ": req.OrderLimitPrice ,
 	}
 	err = r.db.QueryRow(ctx, query, params).Scan(
 		&PromoCode.Name,
