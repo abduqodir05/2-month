@@ -76,7 +76,7 @@ func (h *Handler) TotalPriceOrder(c *gin.Context) {
 	orderId, err := strconv.Atoi(id)
 	if err != nil {
 		h.handlerResponse(c, "Atoi error order total price", http.StatusBadRequest, err.Error())
-		fmt.Println(">>>>>>>>>>>>>>>",orderId)
+		fmt.Println(">>>>>>>>>>>>>",orderId)
 		return
 	}
 	fmt.Println(promo)

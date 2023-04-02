@@ -144,8 +144,7 @@ func (r *orderRepo) TotalPriceWithOrder(ctx context.Context, req *models.OrderTo
 		&PromoCode.DiscountType,
 		&PromoCode.OrderLimitPrice,
 	)
-	fmt.Println("ccccccccccccccccccccccc", req.Name)
-	fmt.Println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", err)
+
 	if err != nil {
 		return "", err
 	}
