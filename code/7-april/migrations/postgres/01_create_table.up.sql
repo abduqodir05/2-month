@@ -1,0 +1,12 @@
+
+
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY NOT NULL UNIQUE,
+    first_name VARCHAR NOT NULL,
+    last_name VARCHAR NOT NULL,
+    login VARCHAR NOT NULL,
+    password VARCHAR NOT NULL,
+    phone_number VARCHAR NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL
+);
