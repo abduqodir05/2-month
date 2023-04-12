@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package dict;
+
+option go_package = "app/dict";
+
+service TranslateService {
+
+    rpc CalcAdd(AddRequest) returns (AddResponse) {}
+    rpc CalcDiv(DivRequest) returns (DivResponse) {}
+    rpc CalcSub(SubRequest) returns (SubResponse) {}
+    rpc CalcMult(MultRequest) returns (MultResponse) {}
+    rpc CalcSqrt(SqrtRequest) returns (SqrtResponse) {}
+    rpc CalcMin(MinRequest) returns (MinResponse) {}
+    rpc CalcPow(PowRequest) returns (PowResponse) {}
+    
+}
+
+message AddRequest {
+    int32 num1 = 1;
+    int32 num2 = 2;
+}
+message AddResponse {
+    int32 res =1; 
+}
+
+
+message DivRequest {
+    int32 num1 = 1;
+    int32 num2 = 2;
+}
+
+message DivResponse {
+    int32 res =1; 
+}
+
+
+
+message SubRequest {
+    int32 num1 = 1;
+    int32 num2 = 2;
+}
+
+message SubResponse {
+    int32 res =1; 
+}
+
+message MultRequest {
+    int32 num1 = 1;
+    int32 num2 = 2;
+}
+
+message MultResponse {
+    int32 res = 1; 
+}
+
+message MinRequest {
+    repeated int32 nums = 1;
+}
+
+message MinResponse {
+    int32 res = 1; 
+}
+
+
+message SqrtRequest {
+    float num = 1;
+}
+
+message SqrtResponse {
+    int32 res = 1; 
+}
+message PowRequest {
+    int32 num1 = 1;
+    int32 num2 = 2;
+
+}
+
+message PowResponse {
+    int32 res = 1; 
+}
