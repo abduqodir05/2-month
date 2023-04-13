@@ -1,0 +1,3 @@
+[submodule "go/src/gitlab.com/book-service/BookTemplate"]
+	path = go/src/gitlab.com/book-service/BookTemplate
+	url = git@gitlab.com:book864515/BookTemplate.git
