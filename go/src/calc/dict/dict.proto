@@ -34,8 +34,6 @@ message DivResponse {
     int32 res =1; 
 }
 
-
-
 message SubRequest {
     int32 num1 = 1;
     int32 num2 = 2;

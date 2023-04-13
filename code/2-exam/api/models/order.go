@@ -80,10 +80,6 @@ type CreateOrderItem struct {
 }
 
 type OrderTotalPrice struct {
-	Name            string  `json:"name"`
-	Discount        float64 `json:"discount"`
-	DiscountType    string  `json:"discount_type"`
-	OrderLimitPrice float64 `json:"order_limit_price"`
 	OrderId       int    `json:"order_id"`
 	PromoCodeName string `json:"promo_code"`
 }

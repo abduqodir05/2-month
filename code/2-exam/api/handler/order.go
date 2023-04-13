@@ -18,6 +18,7 @@ import (
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param offset query string false "offset"
 // @Param limit query string false "limit"
 // @Param search query string false "search"
@@ -43,48 +44,46 @@ func (h *Handler) InfoOfSoldProductsByStaffer(c *gin.Context) {
 		Limit:  limit,
 		Search: c.Query("search"),
 	})
-	
+
 	if err != nil {
 		h.handlerResponse(c, "storage.order.Sold Products 3", http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	h.handlerResponse(c, "Sold Products response 4" , http.StatusOK, resp)
+	h.handlerResponse(c, "Sold Products response 4", http.StatusOK, resp)
 }
 
 // Get Total price order godoc
 // @ID get_total_price_order
-// @Router /totalorder/total_price [GET]
+// @Router /totalorder/total_price/{id} [GET]
 // @Summary Total price orde
 // @Description Total price orde
 // @Tags Order
 // @Accept json
 // @Produce json
-// @Param order_id query string true "order_id"
+// @Param Password header string false "Password"
+// @Param id path string true "id"
 // @Param promocode_name query string false "name"
 // @Success 200 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
 // @Failure 500 {object} Response{data=string} "Server Error"
 func (h *Handler) TotalPriceOrder(c *gin.Context) {
 
-	id := c.Param("order_id")
-	promo := c.Query("promo_code")
-	fmt.Println(id)
-	var orderPrice models.OrderTotalPrice
-	orderPrice.PromoCodeName = c.Query("name")
+	id := c.Param("id")
+	promo := c.Query("promocode_name")
+	fmt.Println("order id from path", id)
 
 	orderId, err := strconv.Atoi(id)
 	if err != nil {
+		fmt.Println(">>>>>>>>>>>>>", orderId)
 		h.handlerResponse(c, "Atoi error order total price", http.StatusBadRequest, err.Error())
-		fmt.Println(">>>>>>>>>>>>>",orderId)
 		return
 	}
-	fmt.Println(promo)
+	fmt.Println("promo code from query", promo)
 
-	TotalPrice, err := h.storages.Order().TotalPriceWithOrder(context.Background(), &models.OrderTotalPrice{OrderId: orderId})
+	TotalPrice, err := h.storages.Order().TotalPriceWithOrder(context.Background(), &models.OrderTotalPrice{OrderId: orderId, PromoCodeName: promo})
 	if err != nil {
-
-		h.handlerResponse(c, "storage.order.getByID", http.StatusInternalServerError, err.Error())
+		h.handlerResponse(c, "storage.order.TotalPriceWithOrder", http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -99,6 +98,7 @@ func (h *Handler) TotalPriceOrder(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param order body models.CreateOrder true "CreateOrderRequest"
 // @Success 201 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
@@ -136,6 +136,7 @@ func (h *Handler) CreateOrder(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param id path string true "id"
 // @Success 200 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
@@ -167,6 +168,7 @@ func (h *Handler) GetByIdOrder(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param offset query string false "offset"
 // @Param limit query string false "limit"
 // @Param search query string false "search"
@@ -208,6 +210,7 @@ func (h *Handler) GetListOrder(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param id path string true "id"
 // @Param order body models.UpdateOrder true "UpdateOrderRequest"
 // @Success 202 {object} Response{data=string} "Success Request"
@@ -261,6 +264,7 @@ func (h *Handler) UpdateOrder(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param id path string true "id"
 // @Param order body models.PatchRequest true "UpdatePatchRequest"
 // @Success 202 {object} Response{data=string} "Success Request"
@@ -314,6 +318,7 @@ func (h *Handler) UpdatePatchOrder(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param id path string true "id"
 // @Param order body models.OrderPrimaryKey true "DeleteOrderRequest"
 // @Success 204 {object} Response{data=string} "Success Request"
@@ -351,6 +356,7 @@ func (h *Handler) DeleteOrder(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param order_item body models.CreateOrderItem true "CreateOrderItemRequest"
 // @Success 201 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
@@ -371,8 +377,6 @@ func (h *Handler) CreateOrderItem(c *gin.Context) {
 		return
 	}
 
-	
-
 	// resp, err := h.storages.Order().GetByID(context.Background(), &models.OrderPrimaryKey{OrderId: id})
 	// if err != nil {
 	// 	h.handlerResponse(c, "storage.order.getByID", http.StatusInternalServerError, err.Error())
@@ -390,6 +394,7 @@ func (h *Handler) CreateOrderItem(c *gin.Context) {
 // @Tags Order
 // @Accept json
 // @Produce json
+// @Param Password header string false "Password"
 // @Param id path string true "id"
 // @Param item_id query string true "item_id"
 // @Param orderItem body models.OrderItemPrimaryKey true "DeleteOrderItemRequest"

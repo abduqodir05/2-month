@@ -23,6 +23,8 @@ type Config struct {
 
 	DefaultOffset int
 	DefaultLimit  int
+
+	SecretKey string
 }
 
 func Load() Config {
@@ -38,6 +40,7 @@ func Load() Config {
 	cfg.PostgresPort = "5432"
 	cfg.DefaultOffset = 0
 	cfg.DefaultLimit = 10
+	cfg.SecretKey = "1234"
 
 	return cfg
 }

@@ -9,6 +9,101 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Update Stock godoc
+// @ID update_stock
+// @Router /sendstock/{id} [PUT]
+// @Summary Send product
+// @Description Send product
+// @Tags Stock
+// @Accept json
+// @Produce json
+// @Param id path string true "id"
+// @Param stock body models.SendProduct true "UpdateStockRequest"
+// @Success 202 {object} Response{data=string} "Success Request"
+// @Response 400 {object} Response{data=string} "Bad Request"
+// @Failure 500 {object} Response{data=string} "Server Error"
+func (h *Handler) SendProduct(c *gin.Context) {
+
+	var updateStock models.SendProduct
+
+	id := c.Param("id")
+
+	err := c.ShouldBindJSON(&updateStock)
+	if err != nil {
+		h.handlerResponse(c, "update stock", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	idInt, err := strconv.Atoi(id)
+	if err != nil {
+		h.handlerResponse(c, "storage.stock.getByID", http.StatusBadRequest, "id incorrect")
+		return
+	}
+
+	updateStock.From_storeId = idInt
+
+	rowsAffected, err := h.storages.Stock().SendProduct(context.Background(), &updateStock)
+	if err != nil {
+		h.handlerResponse(c, "storage.stock.update", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if rowsAffected <= 0 {
+		h.handlerResponse(c, "storage.stock.update", http.StatusBadRequest, "now rows affected")
+		return
+	}
+
+	resp, err := h.storages.Stock().GetByID(context.Background(), &models.StockPrimaryKey{StoreId: idInt})
+	if err != nil {
+		h.handlerResponse(c, "storage.stock.getByID", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	h.handlerResponse(c, "update stock", http.StatusAccepted, resp)
+}
+
+// Get List Stock godoc
+// @ID get_list_stock
+// @Router /stock [GET]
+// @Summary Get List Stock
+// @Description Get List Stock
+// @Tags Stock
+// @Accept json
+// @Produce json
+// @Param offset query string false "offset"
+// @Param limit query string false "limit"
+// @Param search query string false "search"
+// @Success 200 {object} Response{data=string} "Success Request"
+// @Response 400 {object} Response{data=string} "Bad Request"
+// @Failure 500 {object} Response{data=string} "Server Error"
+func (h *Handler) GetListStock(c *gin.Context) {
+
+	offset, err := h.getOffsetQuery(c.Query("offset"))
+	if err != nil {
+		h.handlerResponse(c, "get list stock", http.StatusBadRequest, "invalid offset")
+		return
+	}
+
+	limit, err := h.getLimitQuery(c.Query("limit"))
+	if err != nil {
+		h.handlerResponse(c, "get list stock", http.StatusBadRequest, "invalid limit")
+		return
+	}
+
+	resp, err := h.storages.Stock().GetList(context.Background(), &models.GetListStockRequest{
+		Offset: offset,
+		Limit:  limit,
+		Search: c.Query("search"),
+	})
+	if err != nil {
+		h.handlerResponse(c, "storage.stock.getlist", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	h.handlerResponse(c, "get list stock response", http.StatusOK, resp)
+}
+
+
 // Create Stock godoc
 // @ID create_stock
 // @Router /stock [POST]
@@ -77,100 +172,6 @@ func (h *Handler) GetByIdStock(c *gin.Context) {
 	}
 
 	h.handlerResponse(c, "get stock by id", http.StatusCreated, resp)
-}
-
-// Get List Stock godoc
-// @ID get_list_stock
-// @Router /stock [GET]
-// @Summary Get List Stock
-// @Description Get List Stock
-// @Tags Stock
-// @Accept json
-// @Produce json
-// @Param offset query string false "offset"
-// @Param limit query string false "limit"
-// @Param search query string false "search"
-// @Success 200 {object} Response{data=string} "Success Request"
-// @Response 400 {object} Response{data=string} "Bad Request"
-// @Failure 500 {object} Response{data=string} "Server Error"
-func (h *Handler) GetListStock(c *gin.Context) {
-
-	offset, err := h.getOffsetQuery(c.Query("offset"))
-	if err != nil {
-		h.handlerResponse(c, "get list stock", http.StatusBadRequest, "invalid offset")
-		return
-	}
-
-	limit, err := h.getLimitQuery(c.Query("limit"))
-	if err != nil {
-		h.handlerResponse(c, "get list stock", http.StatusBadRequest, "invalid limit")
-		return
-	}
-
-	resp, err := h.storages.Stock().GetList(context.Background(), &models.GetListStockRequest{
-		Offset: offset,
-		Limit:  limit,
-		Search: c.Query("search"),
-	})
-	if err != nil {
-		h.handlerResponse(c, "storage.stock.getlist", http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	h.handlerResponse(c, "get list stock response", http.StatusOK, resp)
-}
-
-// Update Stock godoc
-// @ID update_stock
-// @Router /sendstock/{id} [PUT]
-// @Summary Send product
-// @Description Send product
-// @Tags Stock
-// @Accept json
-// @Produce json
-// @Param id path string true "id"
-// @Param stock body models.SendProduct true "UpdateStockRequest"
-// @Success 202 {object} Response{data=string} "Success Request"
-// @Response 400 {object} Response{data=string} "Bad Request"
-// @Failure 500 {object} Response{data=string} "Server Error"
-func (h *Handler) SendProduct(c *gin.Context) {
-
-	var updateStock models.SendProduct
-
-	id := c.Param("id")
-
-	err := c.ShouldBindJSON(&updateStock)
-	if err != nil {
-		h.handlerResponse(c, "update stock", http.StatusBadRequest, err.Error())
-		return
-	}
-
-	idInt, err := strconv.Atoi(id)
-	if err != nil {
-		h.handlerResponse(c, "storage.stock.getByID", http.StatusBadRequest, "id incorrect")
-		return
-	}
-
-	updateStock.From_storeId = idInt
-
-	rowsAffected, err := h.storages.Stock().SendProduct(context.Background(), &updateStock)
-	if err != nil {
-		h.handlerResponse(c, "storage.stock.update", http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if rowsAffected <= 0 {
-		h.handlerResponse(c, "storage.stock.update", http.StatusBadRequest, "now rows affected")
-		return
-	}
-
-	resp, err := h.storages.Stock().GetByID(context.Background(), &models.StockPrimaryKey{StoreId: idInt})
-	if err != nil {
-		h.handlerResponse(c, "storage.stock.getByID", http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	h.handlerResponse(c, "update stock", http.StatusAccepted, resp)
 }
 
 // Update Stock godoc

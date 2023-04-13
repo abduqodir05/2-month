@@ -1411,6 +1411,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
                         "description": "offset",
                         "name": "offset",
                         "in": "query"
@@ -1500,6 +1506,12 @@ const docTemplate = `{
                 "operationId": "create_order",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
+                    {
                         "description": "CreateOrderRequest",
                         "name": "order",
                         "in": "body",
@@ -1584,6 +1596,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
                         "description": "id",
                         "name": "id",
                         "in": "path",
@@ -1661,6 +1679,12 @@ const docTemplate = `{
                 "summary": "Update Order",
                 "operationId": "update_order",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "id",
@@ -1751,6 +1775,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
                         "description": "id",
                         "name": "id",
                         "in": "path",
@@ -1837,6 +1867,12 @@ const docTemplate = `{
                 "summary": "Update PATCH Order",
                 "operationId": "update_order",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "id",
@@ -1928,6 +1964,12 @@ const docTemplate = `{
                 "operationId": "create_order_item",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
+                    {
                         "description": "CreateOrderItemRequest",
                         "name": "order_item",
                         "in": "body",
@@ -2010,6 +2052,12 @@ const docTemplate = `{
                 "summary": "Delete Order Item",
                 "operationId": "delete_order_item",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "id",
@@ -2107,6 +2155,12 @@ const docTemplate = `{
                 "summary": "Sold Products By Staffers",
                 "operationId": "get_list_order_sold",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
                     {
                         "type": "string",
                         "description": "offset",
@@ -4512,7 +4566,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/totalorder/total_price": {
+        "/totalorder/total_price/{id}": {
             "get": {
                 "description": "Total price orde",
                 "consumes": [
@@ -4529,9 +4583,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "order_id",
-                        "name": "order_id",
-                        "in": "query",
+                        "description": "Password",
+                        "name": "Password",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
                         "required": true
                     },
                     {

@@ -1112,6 +1112,10 @@ paths:
       description: Get List Order
       operationId: get_list_order
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: offset
         in: query
         name: offset
@@ -1163,6 +1167,10 @@ paths:
       description: Create Order
       operationId: create_order
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: CreateOrderRequest
         in: body
         name: order
@@ -1209,6 +1217,10 @@ paths:
       description: Delete Order
       operationId: delete_order
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: id
         in: path
         name: id
@@ -1259,6 +1271,10 @@ paths:
       description: Get By ID Order
       operationId: get_by_id_order
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: id
         in: path
         name: id
@@ -1303,6 +1319,10 @@ paths:
       description: Update PATCH Order
       operationId: update_order
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: id
         in: path
         name: id
@@ -1353,6 +1373,10 @@ paths:
       description: Update Order
       operationId: update_order
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: id
         in: path
         name: id
@@ -1404,6 +1428,10 @@ paths:
       description: Create Order Item
       operationId: create_order_item
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: CreateOrderItemRequest
         in: body
         name: order_item
@@ -1450,6 +1478,10 @@ paths:
       description: Delete Order Item
       operationId: delete_order_item
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: id
         in: path
         name: id
@@ -1506,6 +1538,10 @@ paths:
       description: Sold Products By Staffers
       operationId: get_list_order_sold
       parameters:
+      - description: Password
+        in: header
+        name: Password
+        type: string
       - description: offset
         in: query
         name: offset
@@ -2862,16 +2898,20 @@ paths:
       summary: Update Store
       tags:
       - Store
-  /totalorder/total_price:
+  /totalorder/total_price/{id}:
     get:
       consumes:
       - application/json
       description: Total price orde
       operationId: get_total_price_order
       parameters:
-      - description: order_id
-        in: query
-        name: order_id
+      - description: Password
+        in: header
+        name: Password
+        type: string
+      - description: id
+        in: path
+        name: id
         required: true
         type: string
       - description: name

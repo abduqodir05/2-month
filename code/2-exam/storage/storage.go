@@ -49,6 +49,7 @@ type StockRepoI interface {
 	Update(ctx context.Context, req *models.UpdateStock) (int64, error)
 	Delete(ctx context.Context, req *models.StockPrimaryKey) (int64, error)
 	SendProduct(ctx context.Context, req *models.SendProduct) (int64, error)
+	GetProductsFormStock(ctx context.Context, req *models.CreateOrderItem) error
 }
 
 type StoreRepoI interface {

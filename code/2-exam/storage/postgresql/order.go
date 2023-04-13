@@ -105,7 +105,7 @@ func (r *orderRepo) TotalPriceWithOrder(ctx context.Context, req *models.OrderTo
 	)
 	query = `
 	SELECT 
-	sum(oi.list_price) as total_price
+	sum(oi.list_price * oi.quantity) as total_price
 	from orders as o 
 	join order_items as oi on oi.order_id = o.order_id
 	join products as p on p.product_id = oi.product_id
@@ -132,13 +132,7 @@ func (r *orderRepo) TotalPriceWithOrder(ctx context.Context, req *models.OrderTo
 			WHERE name = $1
 			`
 
-	var params = map[string]interface{}{
-		"name": req.Name,
-		"discount": req.Discount,
-		"discount_type": req.DiscountType,
-		"order_limit_price ": req.OrderLimitPrice ,
-	}
-	err = r.db.QueryRow(ctx, query, params).Scan(
+	err = r.db.QueryRow(ctx, query, req.PromoCodeName).Scan(
 		&PromoCode.Name,
 		&PromoCode.Discount,
 		&PromoCode.DiscountType,
@@ -342,6 +336,7 @@ func (r *orderRepo) GetList(ctx context.Context, req *models.GetListOrderRequest
 		limit  = " LIMIT 10"
 	)
 
+	
 	query = `
 		SELECT
 			COUNT(*) OVER(),
@@ -610,7 +605,6 @@ func (r *orderRepo) RemoveOrderItem(ctx context.Context, req *models.OrderItemPr
 
 	if err != nil {
 		return err
-	}
-
+}
 	return nil
 }

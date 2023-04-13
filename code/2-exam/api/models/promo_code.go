@@ -1,7 +1,6 @@
 package models
 
 type PromoCode struct {
-	OrderId			string  `json:"order_id"`
 	Name            string  `json:"name"`
 	Discount        float64 `json:"discount"`
 	DiscountType    string  `json:"discount_type"`
