@@ -1,0 +1,3 @@
+[submodule "uu_protos"]
+	path = uu_protos
+	url = git@gitlab.com:book6485215/uu_protos.git

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "genproto/user_service";
+
+
+import "google/protobuf/empty.proto";
+import "hobby.proto";
+
+service HobbyService {
+    rpc Create(CreateHobby) returns (Hobby) {};
+    rpc GetByID(HobbyPrimaryKey) returns (Hobby) {};
+    rpc GetList(GetListHobbyRequest) returns (GetListHobbyResponse) {};
+    rpc Update(UpdateHobby) returns (Hobby) {};
+    rpc UpdatePatch(UpdatePatchHobby) returns (Hobby) {};
+    rpc Delete(HobbyPrimaryKey) returns (google.protobuf.Empty) {};
+}
