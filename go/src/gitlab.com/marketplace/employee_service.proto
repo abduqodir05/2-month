@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package mp_protos;
+
+option go_package = "genproto/mp_protos";
+
+
+import "google/protobuf/empty.proto";
+import "employee.proto";
+
+service EmployeeService {
+    rpc Create(CreateEmployee) returns (Employee) {};
+    rpc GetByID(EmployeePrimaryKey) returns (Employee) {};
+    rpc GetList(GetListEmployeeRequest) returns (GetListEmployeeResponse) {};
+    rpc Update(UpdateEmployee) returns (Employee) {};
+    rpc UpdatePatch(UpdatePatchEmployee) returns (Employee) {};
+    rpc Delete(EmployeePrimaryKey) returns (google.protobuf.Empty) {};
+}

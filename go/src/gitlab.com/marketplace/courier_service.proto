@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package mp_protos;
+
+option go_package = "genproto/mp_protos";
+
+
+import "google/protobuf/empty.proto";
+import "courier.proto";
+
+service CourierService {
+    rpc Create(CreateCourier) returns (Courier) {};
+    rpc GetByID(CourierPrimaryKey) returns (Courier) {};
+    rpc GetList(GetListCourierRequest) returns (GetListCourierResponse) {};
+    rpc Update(UpdateCourier) returns (Courier) {};
+    rpc UpdatePatch(UpdatePatchCourier) returns (Courier) {};
+    rpc Delete(CourierPrimaryKey) returns (google.protobuf.Empty) {};
+}

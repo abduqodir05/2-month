@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package mp_protos;
+
+option go_package = "genproto/mp_protos";
+
+import "google/protobuf/struct.proto";
+
+message EmployeePrimaryKey {
+    string id = 1;
+}
+
+message Employee {
+    string id = 1;
+    string name = 2;
+    string created_at = 3;
+    string updated_at = 4;
+    string deleted_at = 5;
+    string phone_number = 6;
+}
+
+message CreateEmployee {
+    string name = 1;
+    string phone_number = 2;
+    
+}
+
+message UpdateEmployee {
+    string id = 1;
+    string name = 2;
+    string phone_number = 3;
+ 
+}
+message UpdatePatchEmployee {
+    string id = 1;
+    google.protobuf.Struct fields = 2;
+}
+
+message GetListEmployeeRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+    string search = 3;
+    string type = 4;
+}
+
+message GetListEmployeeResponse {
+    int64 count = 1;
+    repeated Employee Employees = 2;
+}

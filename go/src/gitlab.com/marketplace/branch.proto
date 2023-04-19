@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package mp_protos;
+
+option go_package = "genproto/mp_protos";
+
+import "google/protobuf/struct.proto";
+
+message BranchPrimaryKey {
+    string id = 1;
+}
+
+message Branch {
+    string id = 1;
+    string name = 2;
+    string branch_code = 3;
+    string created_at = 4;
+    string updated_at = 5;
+    string deleted_at = 6;
+    string address = 7;
+    string phone_number = 8;
+    
+}
+
+message CreateBranch {
+    string name = 1;
+    string phone_number = 2;
+    string branch_code = 3;
+    string address = 4;
+    
+}
+
+message UpdateBranch {
+    string id = 1;
+    string name = 2;
+    string branch_code = 3;
+    string address = 4;
+    string phone_number = 5;
+ 
+}
+message UpdatePatchBranch {
+    string id = 1;
+    google.protobuf.Struct fields = 2;
+}
+
+message GetListBranchRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+    string search = 3;
+    string type = 4;
+}
+
+message GetListBranchResponse {
+    int64 count = 1;
+    repeated Branch Branches = 2;
+}
